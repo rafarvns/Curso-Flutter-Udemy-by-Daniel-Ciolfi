@@ -1,7 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(
+  runApp(CupertinoApp(
       title: "Contador de Pessoas",
       home: Home()
   ));
@@ -42,8 +43,7 @@ class _HomeState extends State<Home> {
           children: <Widget>[
             Text(
               "Pessoas: $_people",
-              style:
-              TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.white, fontSize: 40.0),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
