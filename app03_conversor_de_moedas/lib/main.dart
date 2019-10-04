@@ -19,7 +19,41 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  double _dolar, _euro;
+  final realController = TextEditingController();
+  final euroController = TextEditingController();
+  final dolarController = TextEditingController();
+
+  double dolar, euro;
+
+  void _realChanged(String text){
+    if(text == ""){
+      zeraCampos();
+      return;
+    }
+    double real = double.parse(text);
+    dolarController.text = (real / dolar).toStringAsFixed(2);
+    euroController.text = (real / euro).toStringAsFixed(2);
+  }
+
+  void _dolarChanged(String text){
+    if(text == ""){
+      zeraCampos();
+      return;
+    }
+    double dolar = double.parse(text);
+    realController.text = (dolar * this.dolar).toStringAsFixed(2);
+    euroController.text = (dolar * this.dolar / euro).toStringAsFixed(2);
+  }
+
+  void _euroChanged(String text){
+    if(text == ""){
+      zeraCampos();
+      return;
+    }
+    double euro = double.parse(text);
+    realController.text = (euro * this.euro).toStringAsFixed(2);
+    dolarController.text = (euro * this.euro / dolar).toStringAsFixed(2);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +87,8 @@ class _HomeState extends State<Home> {
                   textAlign: TextAlign.center,
                 ));
               } else {
-                _dolar = snapshot.data["results"]["currencies"]["USD"]["buy"];
-                _euro = snapshot.data["results"]["currencies"]["EUR"]["buy"];
+                dolar = snapshot.data["results"]["currencies"]["USD"]["buy"];
+                euro = snapshot.data["results"]["currencies"]["EUR"]["buy"];
                 return SingleChildScrollView(
                   padding: EdgeInsets.all(10.0),
                   child: Column(
@@ -65,39 +99,12 @@ class _HomeState extends State<Home> {
                         size: 150.0,
                         color: Colors.amber,
                       ),
-                      TextField(
-                        decoration: InputDecoration(
-                            labelText: "Reais",
-                            labelStyle: TextStyle(color: Colors.amber),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.amber, width: 0.5),
-                            ),
-                            prefixText: "R\$ "),
-                        style: TextStyle(color: Colors.amber, fontSize: 25.0),
-                      ),
-                      TextField(
-                        decoration: InputDecoration(
-                            labelText: "Dolares",
-                            labelStyle: TextStyle(color: Colors.amber),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.amber, width: 0.5),
-                            ),
-                            prefixText: "US\$ "),
-                        style: TextStyle(color: Colors.amber, fontSize: 25.0),
-                      ),
-                      TextField(
-                        decoration: InputDecoration(
-                            labelText: "Euros",
-                            labelStyle: TextStyle(color: Colors.amber),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.amber, width: 0.5),
-                            ),
-                            prefixText: "E "),
-                        style: TextStyle(color: Colors.amber, fontSize: 25.0),
-                      ),
+                      Divider(),
+                      buildTextField("Reais", "R\$ ", realController, _realChanged),
+                      Divider(),
+                      buildTextField("Dólares", "US\$ ", dolarController, _dolarChanged),
+                      Divider(),
+                      buildTextField("Euros", "E ", euroController, _euroChanged),
                     ],
                   ),
                 );
@@ -107,6 +114,29 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+
+  void zeraCampos() {
+    realController.text = "";
+    dolarController.text = "";
+    euroController.text = "";
+  }
+}
+
+Widget buildTextField(
+    String label, String prefix, TextEditingController controller, Function change) {
+  return TextField(
+    controller: controller,
+    onChanged: change,
+    keyboardType: TextInputType.number,
+    decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.amber),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.amber, width: 0.5),
+        ),
+        prefixText: prefix),
+    style: TextStyle(color: Colors.amber, fontSize: 25.0),
+  );
 }
 
 Future<Map> getData() async {
